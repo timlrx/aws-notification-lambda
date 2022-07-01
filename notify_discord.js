@@ -1,16 +1,20 @@
 const https = require("https");
 
 const postRequest = (webhookUrl, payload) => {
-  discord_data = {
+
+  const {title, statusCode, body, timestamp } = payload
+  const formattedBody = typeof body === "string" ? body : JSON.stringify(body);
+  
+  const discord_data = {
     username: "AWS",
     avatar_url:
       "https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png",
     embeds: [
       {
-        title: payload.title,
-        color: payload.statusCode === 200 ? 2538752 : 14177041,
-        description:
-          payload.statusCode === 200 ? payload.body : `⚠️ ${payload.body}`,
+        title: title,
+        color: statusCode === 200 ? 2538752 : 14177041,
+        description: statusCode === 200 ? formattedBody : `⚠️ ${formattedBody}`,
+        timestamp: timestamp,
       },
     ],
   };
@@ -55,6 +59,7 @@ exports.handler = async (event) => {
     statusCode: event.statusCode,
     title: event.title || null,
     body: event.body || "",
+    timestamp: event.timestamp || null
   };
   const webhookUrl = process.env.WEBHOOK_URL;
   const result = await postRequest(webhookUrl, payload);
