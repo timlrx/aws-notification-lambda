@@ -4,23 +4,37 @@ const postRequest = (webhookUrl, payload) => {
   const { title, statusCode, body, timestamp } = payload;
   const formattedBody = typeof body === "string" ? body : JSON.stringify(body);
 
-  const discord_data = {
-    username: "AWS",
-    avatar_url:
-      "https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png",
-    embeds: [
+  const slack_data = {
+    attachments: [
       {
-        title: title,
-        color: statusCode === 200 ? 2538752 : 14177041,
-        description: statusCode === 200 ? formattedBody : `⚠️ ${formattedBody}`,
-        timestamp: timestamp,
+        color: statusCode === 200 ? "#008000" : "#DC3545",
+        blocks: [
+          {
+            type: "header",
+            text: {
+              type: "plain_text",
+              text: title,
+              emoji: true,
+            },
+          },
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text:
+                statusCode === 200
+                  ? `${timestamp} \n ${formattedBody}`
+                  : `⚠️ ${timestamp} \n ${formattedBody}`,
+            },
+          },
+        ],
       },
     ],
   };
 
   const options = {
-    hostname: "discordapp.com",
-    path: webhookUrl.split("discordapp.com")[1],
+    hostname: "hooks.slack.com",
+    path: webhookUrl.split("hooks.slack.com")[1],
     port: 443,
     method: "POST",
     headers: {
@@ -48,7 +62,7 @@ const postRequest = (webhookUrl, payload) => {
       reject(new Error(err));
     });
 
-    req.write(JSON.stringify(discord_data));
+    req.write(JSON.stringify(slack_data));
     req.end();
   });
 };
