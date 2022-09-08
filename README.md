@@ -1,4 +1,4 @@
-# Discord Notification Lambda
+# AWS Notification Lambda
 
 A simple lambda function to send a notification to Discord or Slack. Also works with SNS, in which case `webhookUrl` and `statusCode` would be MessageAttributes.
 
